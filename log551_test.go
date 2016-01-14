@@ -188,6 +188,7 @@ func TestCritical(t *testing.T) {
 }
 
 func BenchmarkDebug(b *testing.B) {
+//	b.SkipNow()
 	conf := log551.Config{
 		Debug:true,
 		Information:true,

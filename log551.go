@@ -3,6 +3,8 @@ import (
 	"os"
 	"fmt"
 	"time"
+	"runtime"
+	"path"
 )
 
 type logLevel int
@@ -74,77 +76,94 @@ func (l *log551) Close() {
 }
 
 func (l *log551) Debug(a interface{}) {
-	l.output(DEBUG, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(DEBUG, file, line, "%v", a)
 }
 
 func (l *log551) Debugf(format string, a ...interface{}) {
-	l.output(DEBUG, format, a...)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(DEBUG, file, line, format, a...)
 }
 
 func (l *log551) Debugln(a interface{}) {
-	l.output(DEBUG, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(DEBUG, file, line, "%v", a)
 }
 
 func (l *log551) Information(a interface{}) {
-	l.output(INFORMATION, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(INFORMATION, file, line, "%v", a)
 }
 
 func (l *log551) Informationf(format string, a ...interface{}) {
-	l.output(INFORMATION, format, a...)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(INFORMATION, file, line, format, a...)
 }
 
 func (l *log551) Informationln(a interface{}) {
-	l.output(INFORMATION, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(INFORMATION, file, line, "%v", a)
 }
 
 func (l *log551) Warning(a interface{}) {
-	l.output(WARNING, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(WARNING, file, line, "%v", a)
 }
 
 func (l *log551) Warningf(format string, a ...interface{}) {
-	l.output(WARNING, format, a...)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(WARNING, file, line, format, a...)
 }
 
 func (l *log551) Warningln(a interface{}) {
-	l.output(WARNING, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(WARNING, file, line, "%v", a)
 }
 
 func (l *log551) Error(a interface{}) {
-	l.output(ERROR, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(ERROR, file, line, "%v", a)
 }
 
 func (l *log551) Errorf(format string, a ...interface{}) {
-	l.output(ERROR, format, a...)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(ERROR, file, line, format, a...)
 }
 
 func (l *log551) Errorln(a interface{}) {
-	l.output(ERROR, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(ERROR, file, line, "%v", a)
 }
 
 func (l *log551) Critical(a interface{}) {
-	l.output(CRITICAL, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(CRITICAL, file, line, "%v", a)
 }
 
 func (l *log551) Criticalf(format string, a ...interface{}) {
-	l.output(CRITICAL, format, a...)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(CRITICAL, file, line, format, a...)
 }
 
 func (l *log551) Criticalln(a interface{}) {
-	l.output(CRITICAL, "%v", a)
+	_, file, line, _ := runtime.Caller(1)
+	l.output(CRITICAL, file, line, "%v", a)
 }
 
-func (l *log551) output(level logLevel, format string, a ...interface{}) {
+func (l *log551) output(level logLevel, file string, line int, format string, a ...interface{}) {
 	if ! l.isOutput(level) {
 		return
 	}
 
 	param := []interface{}{
 		time.Now().Format("2006/01/02 15:04:05.00000"),
+		path.Base(file),
+		line,
 		level.String(),
 	}
 	param = append(param, a...)
 
-	fmt.Fprintf(l.file, "%s [%s] " + format + "\n", param...)
+	fmt.Fprintf(l.file, "%s %s %d [%s] " + format + "\n", param...)
 
 }
 
