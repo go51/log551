@@ -47,7 +47,7 @@ type ConfigDetail struct {
 	Cache    bool `json:"cache"`
 }
 
-type log551 struct {
+type Log551 struct {
 	config *Config
 	file   *os.File
 	caches []*cache
@@ -62,15 +62,15 @@ type cache struct {
 	a        []interface{}
 }
 
-func New(config *Config) *log551 {
-	return &log551{
+func New(config *Config) *Log551 {
+	return &Log551{
 		config:config,
 		caches:make([]*cache, 0),
 	}
 
 }
 
-func (l *log551) Open() {
+func (l *Log551) Open() {
 	if l.file != nil {
 		return
 	}
@@ -83,7 +83,7 @@ func (l *log551) Open() {
 	l.file = file
 }
 
-func (l *log551) Close() {
+func (l *Log551) Close() {
 	l.outputCacheLog()
 
 	err := l.file.Close()
@@ -95,97 +95,97 @@ func (l *log551) Close() {
 	l.file = nil
 }
 
-func (l *log551) Debug(a interface{}) {
+func (l *Log551) Debug(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(DEBUG, file, line, "%v", a)
 	l.addCache(DEBUG, file, line, "%v", a)
 }
 
-func (l *log551) Debugf(format string, a ...interface{}) {
+func (l *Log551) Debugf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(DEBUG, file, line, format, a...)
 	l.addCache(DEBUG, file, line, format, a...)
 }
 
-func (l *log551) Debugln(a interface{}) {
+func (l *Log551) Debugln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(DEBUG, file, line, "%v", a)
 	l.addCache(DEBUG, file, line, "%v", a)
 }
 
-func (l *log551) Information(a interface{}) {
+func (l *Log551) Information(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(INFORMATION, file, line, "%v", a)
 	l.addCache(INFORMATION, file, line, "%v", a)
 }
 
-func (l *log551) Informationf(format string, a ...interface{}) {
+func (l *Log551) Informationf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(INFORMATION, file, line, format, a...)
 	l.addCache(INFORMATION, file, line, format, a...)
 }
 
-func (l *log551) Informationln(a interface{}) {
+func (l *Log551) Informationln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(INFORMATION, file, line, "%v", a)
 	l.addCache(INFORMATION, file, line, "%v", a)
 }
 
-func (l *log551) Warning(a interface{}) {
+func (l *Log551) Warning(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(WARNING, file, line, "%v", a)
 	l.addCache(WARNING, file, line, "%v", a)
 }
 
-func (l *log551) Warningf(format string, a ...interface{}) {
+func (l *Log551) Warningf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(WARNING, file, line, format, a...)
 	l.addCache(WARNING, file, line, format, a...)
 }
 
-func (l *log551) Warningln(a interface{}) {
+func (l *Log551) Warningln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(WARNING, file, line, "%v", a)
 	l.addCache(WARNING, file, line, "%v", a)
 }
 
-func (l *log551) Error(a interface{}) {
+func (l *Log551) Error(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(ERROR, file, line, "%v", a)
 	l.addCache(ERROR, file, line, "%v", a)
 }
 
-func (l *log551) Errorf(format string, a ...interface{}) {
+func (l *Log551) Errorf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(ERROR, file, line, format, a...)
 	l.addCache(ERROR, file, line, format, a...)
 }
 
-func (l *log551) Errorln(a interface{}) {
+func (l *Log551) Errorln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(ERROR, file, line, "%v", a)
 	l.addCache(ERROR, file, line, "%v", a)
 }
 
-func (l *log551) Critical(a interface{}) {
+func (l *Log551) Critical(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(CRITICAL, file, line, "%v", a)
 	l.addCache(CRITICAL, file, line, "%v", a)
 }
 
-func (l *log551) Criticalf(format string, a ...interface{}) {
+func (l *Log551) Criticalf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(CRITICAL, file, line, format, a...)
 	l.addCache(CRITICAL, file, line, format, a...)
 }
 
-func (l *log551) Criticalln(a interface{}) {
+func (l *Log551) Criticalln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(CRITICAL, file, line, "%v", a)
 	l.addCache(CRITICAL, file, line, "%v", a)
 }
 
-func (l *log551) output(level logLevel, file string, line int, format string, a ...interface{}) {
+func (l *Log551) output(level logLevel, file string, line int, format string, a ...interface{}) {
 	if ! l.isOutput(level) {
 		return
 	}
@@ -202,7 +202,7 @@ func (l *log551) output(level logLevel, file string, line int, format string, a 
 
 }
 
-func (l *log551) isOutput(level logLevel) bool {
+func (l *Log551) isOutput(level logLevel) bool {
 	if !l.config.Debug.EachTime && level == DEBUG {
 		return false
 	}
@@ -222,7 +222,7 @@ func (l *log551) isOutput(level logLevel) bool {
 	return true
 }
 
-func (l *log551) addCache(level logLevel, file string, line int, format string, a ...interface{}) {
+func (l *Log551) addCache(level logLevel, file string, line int, format string, a ...interface{}) {
 	if ! l.isCache(level) {
 		return
 	}
@@ -240,7 +240,7 @@ func (l *log551) addCache(level logLevel, file string, line int, format string, 
 
 }
 
-func (l *log551) isCache(level logLevel) bool {
+func (l *Log551) isCache(level logLevel) bool {
 	if !l.config.Debug.Cache && level == DEBUG {
 		return false
 	}
@@ -260,7 +260,7 @@ func (l *log551) isCache(level logLevel) bool {
 	return true
 }
 
-func (l *log551) outputCacheLog() {
+func (l *Log551) outputCacheLog() {
 	if len(l.caches) == 0 {
 		return
 	}
