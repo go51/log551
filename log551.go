@@ -34,23 +34,40 @@ func (ll logLevel) String() string {
 }
 
 type Config struct {
-	Debug       bool `json:"debug"`
-	Information bool `json:"information"`
-	Warning     bool `json:"warning"`
-	Error       bool `json:"error"`
-	Critical    bool `json:"critical"`
+	Debug       ConfigDetail `json:"debug"`
+	Information ConfigDetail `json:"information"`
+	Warning     ConfigDetail `json:"warning"`
+	Error       ConfigDetail `json:"error"`
+	Critical    ConfigDetail `json:"critical"`
 	Path        string `json:"path"`
+}
+
+type ConfigDetail struct {
+	EachTime bool `json:"each_time"`
+	Cache    bool `json:"cache"`
 }
 
 type log551 struct {
 	config *Config
 	file   *os.File
+	caches []*cache
+}
+
+type cache struct {
+	datetime time.Time
+	file     string
+	line     int
+	level    logLevel
+	format   string
+	a        []interface{}
 }
 
 func New(config *Config) *log551 {
 	return &log551{
 		config:config,
+		caches:make([]*cache, 0),
 	}
+
 }
 
 func (l *log551) Open() {
@@ -67,87 +84,105 @@ func (l *log551) Open() {
 }
 
 func (l *log551) Close() {
+	l.outputCacheLog()
+
 	err := l.file.Close()
 	if err != nil {
 		panic(err)
 	}
 
+	l.caches = nil
 	l.file = nil
 }
 
 func (l *log551) Debug(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(DEBUG, file, line, "%v", a)
+	l.addCache(DEBUG, file, line, "%v", a)
 }
 
 func (l *log551) Debugf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(DEBUG, file, line, format, a...)
+	l.addCache(DEBUG, file, line, format, a...)
 }
 
 func (l *log551) Debugln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(DEBUG, file, line, "%v", a)
+	l.addCache(DEBUG, file, line, "%v", a)
 }
 
 func (l *log551) Information(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(INFORMATION, file, line, "%v", a)
+	l.addCache(INFORMATION, file, line, "%v", a)
 }
 
 func (l *log551) Informationf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(INFORMATION, file, line, format, a...)
+	l.addCache(INFORMATION, file, line, format, a...)
 }
 
 func (l *log551) Informationln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(INFORMATION, file, line, "%v", a)
+	l.addCache(INFORMATION, file, line, "%v", a)
 }
 
 func (l *log551) Warning(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(WARNING, file, line, "%v", a)
+	l.addCache(WARNING, file, line, "%v", a)
 }
 
 func (l *log551) Warningf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(WARNING, file, line, format, a...)
+	l.addCache(WARNING, file, line, format, a...)
 }
 
 func (l *log551) Warningln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(WARNING, file, line, "%v", a)
+	l.addCache(WARNING, file, line, "%v", a)
 }
 
 func (l *log551) Error(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(ERROR, file, line, "%v", a)
+	l.addCache(ERROR, file, line, "%v", a)
 }
 
 func (l *log551) Errorf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(ERROR, file, line, format, a...)
+	l.addCache(ERROR, file, line, format, a...)
 }
 
 func (l *log551) Errorln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(ERROR, file, line, "%v", a)
+	l.addCache(ERROR, file, line, "%v", a)
 }
 
 func (l *log551) Critical(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(CRITICAL, file, line, "%v", a)
+	l.addCache(CRITICAL, file, line, "%v", a)
 }
 
 func (l *log551) Criticalf(format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(CRITICAL, file, line, format, a...)
+	l.addCache(CRITICAL, file, line, format, a...)
 }
 
 func (l *log551) Criticalln(a interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	l.output(CRITICAL, file, line, "%v", a)
+	l.addCache(CRITICAL, file, line, "%v", a)
 }
 
 func (l *log551) output(level logLevel, file string, line int, format string, a ...interface{}) {
@@ -168,21 +203,76 @@ func (l *log551) output(level logLevel, file string, line int, format string, a 
 }
 
 func (l *log551) isOutput(level logLevel) bool {
-	if !l.config.Debug && level == DEBUG {
+	if !l.config.Debug.EachTime && level == DEBUG {
 		return false
 	}
-	if !l.config.Information && level == INFORMATION {
+	if !l.config.Information.EachTime && level == INFORMATION {
 		return false
 	}
-	if !l.config.Warning && level == WARNING {
+	if !l.config.Warning.EachTime && level == WARNING {
 		return false
 	}
-	if !l.config.Error && level == ERROR {
+	if !l.config.Error.EachTime && level == ERROR {
 		return false
 	}
-	if !l.config.Critical && level == CRITICAL {
+	if !l.config.Critical.EachTime && level == CRITICAL {
 		return false
 	}
 
 	return true
+}
+
+func (l *log551) addCache(level logLevel, file string, line int, format string, a ...interface{}) {
+	if ! l.isCache(level) {
+		return
+	}
+
+	cache := &cache{
+		datetime: time.Now(),
+		file: file,
+		line: line,
+		level: level,
+		format: format,
+		a: a,
+	}
+
+	l.caches = append(l.caches, cache)
+
+}
+
+func (l *log551) isCache(level logLevel) bool {
+	if !l.config.Debug.Cache && level == DEBUG {
+		return false
+	}
+	if !l.config.Information.Cache && level == INFORMATION {
+		return false
+	}
+	if !l.config.Warning.Cache && level == WARNING {
+		return false
+	}
+	if !l.config.Error.Cache && level == ERROR {
+		return false
+	}
+	if !l.config.Critical.Cache && level == CRITICAL {
+		return false
+	}
+
+	return true
+}
+
+func (l *log551) outputCacheLog() {
+	if len(l.caches) == 0 {
+		return
+	}
+
+	for _, v := range l.caches {
+		param := []interface{}{
+			v.datetime.Format("2006/01/02 15:04:05.00000"),
+			path.Base(v.file),
+			v.line,
+			v.level.String(),
+		}
+		param = append(param, v.a...)
+		fmt.Fprintf(l.file, "%s %s %d [%s] " + v.format + "\n", param...)
+	}
 }
