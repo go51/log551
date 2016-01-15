@@ -32,13 +32,28 @@ func BenchmarkNew(b *testing.B) {
 	}
 }
 
-func TestDebug(t *testing.T) {
+func TestDebugEachTime(t *testing.T) {
 	conf := log551.Config{
-		Debug:true,
-		Information:false,
-		Warning:false,
-		Error:false,
-		Critical:false,
+		Debug:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
 		Path:"/var/log/gorai/test.log",
 	}
 
@@ -63,13 +78,28 @@ func TestDebug(t *testing.T) {
 	l.Criticalln("test string")
 }
 
-func TestInformation(t *testing.T) {
+func TestInformationEachTime(t *testing.T) {
 	conf := log551.Config{
-		Debug:false,
-		Information:true,
-		Warning:false,
-		Error:false,
-		Critical:false,
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
 		Path:"/var/log/gorai/test.log",
 	}
 
@@ -94,13 +124,28 @@ func TestInformation(t *testing.T) {
 	l.Criticalln("test string")
 }
 
-func TestWarning(t *testing.T) {
+func TestWarningEachTime(t *testing.T) {
 	conf := log551.Config{
-		Debug:false,
-		Information:false,
-		Warning:true,
-		Error:false,
-		Critical:false,
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
 		Path:"/var/log/gorai/test.log",
 	}
 
@@ -125,13 +170,28 @@ func TestWarning(t *testing.T) {
 	l.Criticalln("test string")
 }
 
-func TestError(t *testing.T) {
+func TestErrorEachTime(t *testing.T) {
 	conf := log551.Config{
-		Debug:false,
-		Information:false,
-		Warning:false,
-		Error:true,
-		Critical:false,
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
 		Path:"/var/log/gorai/test.log",
 	}
 
@@ -156,13 +216,28 @@ func TestError(t *testing.T) {
 	l.Criticalln("test string")
 }
 
-func TestCritical(t *testing.T) {
+func TestCriticalEachTime(t *testing.T) {
 	conf := log551.Config{
-		Debug:false,
-		Information:false,
-		Warning:false,
-		Error:false,
-		Critical:true,
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
 		Path:"/var/log/gorai/test.log",
 	}
 
@@ -187,23 +262,267 @@ func TestCritical(t *testing.T) {
 	l.Criticalln("test string")
 }
 
-func BenchmarkDebug(b *testing.B) {
+func TestDebugCache(t *testing.T) {
+	conf := log551.Config{
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Path:"/var/log/gorai/test.log",
+	}
+
+	l := log551.New(&conf)
+	l.Open()
+	defer l.Close()
+
+	l.Debug("test string")
+	l.Debugf("%s %s", "test", "string")
+	l.Debugln("test string")
+	l.Information("test string")
+	l.Informationf("%s %s", "test", "string")
+	l.Informationln("test string")
+	l.Warning("test string")
+	l.Warningf("%s %s", "test", "string")
+	l.Warningln("test string")
+	l.Error("test string")
+	l.Errorf("%s %s", "test", "string")
+	l.Errorln("test string")
+	l.Critical("test string")
+	l.Criticalf("%s %s", "test", "string")
+	l.Criticalln("test string")
+}
+
+func TestInformationCache(t *testing.T) {
+	conf := log551.Config{
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Path:"/var/log/gorai/test.log",
+	}
+
+	l := log551.New(&conf)
+	l.Open()
+	defer l.Close()
+
+	l.Debug("test string")
+	l.Debugf("%s %s", "test", "string")
+	l.Debugln("test string")
+	l.Information("test string")
+	l.Informationf("%s %s", "test", "string")
+	l.Informationln("test string")
+	l.Warning("test string")
+	l.Warningf("%s %s", "test", "string")
+	l.Warningln("test string")
+	l.Error("test string")
+	l.Errorf("%s %s", "test", "string")
+	l.Errorln("test string")
+	l.Critical("test string")
+	l.Criticalf("%s %s", "test", "string")
+	l.Criticalln("test string")
+}
+
+func TestWarningCache(t *testing.T) {
+	conf := log551.Config{
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Path:"/var/log/gorai/test.log",
+	}
+
+	l := log551.New(&conf)
+	l.Open()
+	defer l.Close()
+
+	l.Debug("test string")
+	l.Debugf("%s %s", "test", "string")
+	l.Debugln("test string")
+	l.Information("test string")
+	l.Informationf("%s %s", "test", "string")
+	l.Informationln("test string")
+	l.Warning("test string")
+	l.Warningf("%s %s", "test", "string")
+	l.Warningln("test string")
+	l.Error("test string")
+	l.Errorf("%s %s", "test", "string")
+	l.Errorln("test string")
+	l.Critical("test string")
+	l.Criticalf("%s %s", "test", "string")
+	l.Criticalln("test string")
+}
+
+func TestErrorCache(t *testing.T) {
+	conf := log551.Config{
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Path:"/var/log/gorai/test.log",
+	}
+
+	l := log551.New(&conf)
+	l.Open()
+	defer l.Close()
+
+	l.Debug("test string")
+	l.Debugf("%s %s", "test", "string")
+	l.Debugln("test string")
+	l.Information("test string")
+	l.Informationf("%s %s", "test", "string")
+	l.Informationln("test string")
+	l.Warning("test string")
+	l.Warningf("%s %s", "test", "string")
+	l.Warningln("test string")
+	l.Error("test string")
+	l.Errorf("%s %s", "test", "string")
+	l.Errorln("test string")
+	l.Critical("test string")
+	l.Criticalf("%s %s", "test", "string")
+	l.Criticalln("test string")
+}
+
+func TestCriticalCache(t *testing.T) {
+	conf := log551.Config{
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Path:"/var/log/gorai/test.log",
+	}
+
+	l := log551.New(&conf)
+	l.Open()
+	defer l.Close()
+
+	l.Debug("test string")
+	l.Debugf("%s %s", "test", "string")
+	l.Debugln("test string")
+	l.Information("test string")
+	l.Informationf("%s %s", "test", "string")
+	l.Informationln("test string")
+	l.Warning("test string")
+	l.Warningf("%s %s", "test", "string")
+	l.Warningln("test string")
+	l.Error("test string")
+	l.Errorf("%s %s", "test", "string")
+	l.Errorln("test string")
+	l.Critical("test string")
+	l.Criticalf("%s %s", "test", "string")
+	l.Criticalln("test string")
+}
+
+func BenchmarkEachTime(b *testing.B) {
 //	b.SkipNow()
 	conf := log551.Config{
-		Debug:true,
-		Information:true,
-		Warning:true,
-		Error:true,
-		Critical:true,
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:true,
+			Cache:false,
+		},
 		Path:"/var/log/gorai/test.log",
 	}
 
 	l := log551.New(&conf)
-	l.Open()
-	defer l.Close()
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
+		l.Open()
 		l.Debug("test string")
 		l.Debugf("%s %s", "test", "string")
 		l.Debugln("test string")
@@ -219,6 +538,58 @@ func BenchmarkDebug(b *testing.B) {
 		l.Critical("test string")
 		l.Criticalf("%s %s", "test", "string")
 		l.Criticalln("test string")
+		l.Close()
+	}
+}
+
+func BenchmarkCache(b *testing.B) {
+//	b.SkipNow()
+	conf := log551.Config{
+		Debug:log551.ConfigDetail{
+			EachTime:false,
+			Cache:false,
+		},
+		Information:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Warning:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Error:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Critical:log551.ConfigDetail{
+			EachTime:false,
+			Cache:true,
+		},
+		Path:"/var/log/gorai/test.log",
 	}
 
+	l := log551.New(&conf)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		l.Open()
+
+		l.Debug("test string")
+		l.Debugf("%s %s", "test", "string")
+		l.Debugln("test string")
+		l.Information("test string")
+		l.Informationf("%s %s", "test", "string")
+		l.Informationln("test string")
+		l.Warning("test string")
+		l.Warningf("%s %s", "test", "string")
+		l.Warningln("test string")
+		l.Error("test string")
+		l.Errorf("%s %s", "test", "string")
+		l.Errorln("test string")
+		l.Critical("test string")
+		l.Criticalf("%s %s", "test", "string")
+		l.Criticalln("test string")
+
+		l.Close()
+	}
 }
