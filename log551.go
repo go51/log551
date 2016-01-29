@@ -5,6 +5,7 @@ import (
 	"time"
 	"runtime"
 	"path"
+	"regexp"
 )
 
 type logLevel int
@@ -54,12 +55,13 @@ type Log551 struct {
 }
 
 type cache struct {
-	datetime time.Time
-	file     string
-	line     int
-	level    logLevel
-	format   string
-	a        []interface{}
+	datetime    time.Time
+	packageName string
+	file        string
+	line        int
+	level       logLevel
+	format      string
+	a           []interface{}
 }
 
 func New(config *Config) *Log551 {
@@ -96,109 +98,125 @@ func (l *Log551) Close() {
 }
 
 func (l *Log551) Debug(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(DEBUG, file, line, "%v", a)
-	l.addCache(DEBUG, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(DEBUG, packageName, file, line, "%v", a)
+	l.addCache(DEBUG, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Debugf(format string, a ...interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(DEBUG, file, line, format, a...)
-	l.addCache(DEBUG, file, line, format, a...)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(DEBUG, packageName, file, line, format, a...)
+	l.addCache(DEBUG, packageName, file, line, format, a...)
 }
 
 func (l *Log551) Debugln(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(DEBUG, file, line, "%v", a)
-	l.addCache(DEBUG, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(DEBUG, packageName, file, line, "%v", a)
+	l.addCache(DEBUG, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Information(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(INFORMATION, file, line, "%v", a)
-	l.addCache(INFORMATION, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(INFORMATION, packageName, file, line, "%v", a)
+	l.addCache(INFORMATION, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Informationf(format string, a ...interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(INFORMATION, file, line, format, a...)
-	l.addCache(INFORMATION, file, line, format, a...)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(INFORMATION, packageName, file, line, format, a...)
+	l.addCache(INFORMATION, packageName, file, line, format, a...)
 }
 
 func (l *Log551) Informationln(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(INFORMATION, file, line, "%v", a)
-	l.addCache(INFORMATION, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(INFORMATION, packageName, file, line, "%v", a)
+	l.addCache(INFORMATION, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Warning(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(WARNING, file, line, "%v", a)
-	l.addCache(WARNING, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(WARNING, packageName, file, line, "%v", a)
+	l.addCache(WARNING, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Warningf(format string, a ...interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(WARNING, file, line, format, a...)
-	l.addCache(WARNING, file, line, format, a...)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(WARNING, packageName, file, line, format, a...)
+	l.addCache(WARNING, packageName, file, line, format, a...)
 }
 
 func (l *Log551) Warningln(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(WARNING, file, line, "%v", a)
-	l.addCache(WARNING, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(WARNING, packageName, file, line, "%v", a)
+	l.addCache(WARNING, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Error(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(ERROR, file, line, "%v", a)
-	l.addCache(ERROR, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(ERROR, packageName, file, line, "%v", a)
+	l.addCache(ERROR, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Errorf(format string, a ...interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(ERROR, file, line, format, a...)
-	l.addCache(ERROR, file, line, format, a...)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(ERROR, packageName, file, line, format, a...)
+	l.addCache(ERROR, packageName, file, line, format, a...)
 }
 
 func (l *Log551) Errorln(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(ERROR, file, line, "%v", a)
-	l.addCache(ERROR, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(ERROR, packageName, file, line, "%v", a)
+	l.addCache(ERROR, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Critical(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(CRITICAL, file, line, "%v", a)
-	l.addCache(CRITICAL, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(CRITICAL, packageName, file, line, "%v", a)
+	l.addCache(CRITICAL, packageName, file, line, "%v", a)
 }
 
 func (l *Log551) Criticalf(format string, a ...interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(CRITICAL, file, line, format, a...)
-	l.addCache(CRITICAL, file, line, format, a...)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(CRITICAL, packageName, file, line, format, a...)
+	l.addCache(CRITICAL, packageName, file, line, format, a...)
 }
 
 func (l *Log551) Criticalln(a interface{}) {
-	_, file, line, _ := runtime.Caller(1)
-	l.output(CRITICAL, file, line, "%v", a)
-	l.addCache(CRITICAL, file, line, "%v", a)
+	pc, file, line, _ := runtime.Caller(1)
+	packageName := l.getPackageName(runtime.FuncForPC(pc).Name())
+	l.output(CRITICAL, packageName, file, line, "%v", a)
+	l.addCache(CRITICAL, packageName, file, line, "%v", a)
 }
 
-func (l *Log551) output(level logLevel, file string, line int, format string, a ...interface{}) {
+func (l *Log551) output(level logLevel, packageName, file string, line int, format string, a ...interface{}) {
 	if ! l.isOutput(level) {
 		return
 	}
 
 	param := []interface{}{
 		time.Now().Format("2006/01/02 15:04:05.00000"),
+		packageName,
 		path.Base(file),
 		line,
 		level.String(),
 	}
 	param = append(param, a...)
 
-	fmt.Fprintf(l.file, "%s %s %d [%s] " + format + "\n", param...)
+	fmt.Fprintf(l.file, "%s %s/%s %d [%s] " + format + "\n", param...)
 
 }
 
@@ -222,13 +240,14 @@ func (l *Log551) isOutput(level logLevel) bool {
 	return true
 }
 
-func (l *Log551) addCache(level logLevel, file string, line int, format string, a ...interface{}) {
+func (l *Log551) addCache(level logLevel, packageName, file string, line int, format string, a ...interface{}) {
 	if ! l.isCache(level) {
 		return
 	}
 
 	cache := &cache{
 		datetime: time.Now(),
+		packageName:packageName,
 		file: file,
 		line: line,
 		level: level,
@@ -268,11 +287,24 @@ func (l *Log551) outputCacheLog() {
 	for _, v := range l.caches {
 		param := []interface{}{
 			v.datetime.Format("2006/01/02 15:04:05.00000"),
+			v.packageName,
 			path.Base(v.file),
 			v.line,
 			v.level.String(),
 		}
 		param = append(param, v.a...)
-		fmt.Fprintf(l.file, "%s %s %d [%s] " + v.format + "\n", param...)
+		fmt.Fprintf(l.file, "%s %s/%s %d [%s] " + v.format + "\n", param...)
 	}
+}
+
+var regexpControllerPattern *regexp.Regexp
+
+func (r *Log551) getPackageName(path string) string {
+	if regexpControllerPattern == nil {
+		regexpControllerPattern = regexp.MustCompile(`\/\w+\.`)
+	}
+
+	packageName := regexpControllerPattern.FindString(path)
+
+	return packageName[1 : len(packageName)-1]
 }
